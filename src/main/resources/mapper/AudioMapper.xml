@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.AudioDao">
+
+    <resultMap type="com.baizhi.cmfz.entity.Audio" id="AudioMap">
+        <result property="audioId" column="audio_id" jdbcType="INTEGER"/>
+        <result property="audioName" column="audio_name" jdbcType="VARCHAR"/>
+        <result property="albumId" column="album_id" jdbcType="INTEGER"/>
+        <result property="audioUrl" column="audio_url" jdbcType="VARCHAR"/>
+        <result property="audioSize" column="audio_size" jdbcType="VARCHAR"/>
+        <result property="audioOrder" column="audio_order" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="getById" resultMap="AudioMap">
+        select
+          audio_id, audio_name, album_id, audio_url, audio_size, audio_order
+        from cmfzdemo.cmfz_audio
+        where audio_id = #{audioId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="getAllByLimit" resultMap="AudioMap">
+        select
+          audio_id, audio_name, album_id, audio_url, audio_size, audio_order
+        from cmfzdemo.cmfz_audio
+
+        <where>
+            <if test="audio.audioId != null">
+                and audio_id = #{audio.audioId}
+            </if>
+            <if test="audio.audioName != null and audio.audioName != ''">
+                and audio_name like concat("%",#{audio.audioName},"%")
+            </if>
+            <if test="audio.albumId != null">
+                and album_id = #{audio.albumId}
+            </if>
+            <if test="audio.audioUrl != null and audio.audioUrl != ''">
+                and audio_url = #{audio.audioUrl}
+            </if>
+            <if test="audio.audioSize != null and audio.audioSize != ''">
+                and audio_size = #{audio.audioSize}
+            </if>
+        </where>
+		order by audio_order asc
+        limit #{start}, #{rows}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="audioId" useGeneratedKeys="true">
+        insert into cmfzdemo.cmfz_audio(audio_name, album_id, audio_url, audio_size, audio_order)
+        values (#{audioName}, #{albumId}, #{audioUrl}, #{audioSize}, #{audioOrder})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cmfzdemo.cmfz_audio
+        <set>
+            <if test="audioName != null and audioName != ''">
+                audio_name = #{audioName},
+            </if>
+            <if test="albumId != null">
+                album_id = #{albumId},
+            </if>
+            <if test="audioUrl != null and audioUrl != ''">
+                audio_url = #{audioUrl},
+            </if>
+            <if test="audioSize != null and audioSize != ''">
+                audio_size = #{audioSize},
+            </if>
+            <if test="audioOrder != null">
+                audio_order = #{audioOrder},
+            </if>
+        </set>
+        where audio_id = #{audioId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cmfzdemo.cmfz_audio where audio_id = #{audioId}
+    </delete>
+    
+    <!--通过主键批量删除-->
+    <delete id="deleteByIds">
+        delete from cmfzdemo.cmfz_audio where audio_id in #{audioId}
+        <foreach collection="array" item="id" separator="," open="(" close=")">#{id}</foreach>
+    </delete>
+    <!--查询数量-->
+    <select id="getCount" resultType="int">
+        select count(*)
+        from cmfzdemo.cmfz_audio
+        <where>
+            <if test="audioId != null">
+                and audio_id like concat("%",#{audio.audioId},"%")
+            </if>
+            <if test="audioName != null and audioName != ''">
+                and audio_name like concat("%",#{audio.audioName},"%")
+            </if>
+            <if test="albumId != null">
+                and album_id like concat("%",#{audio.albumId},"%")
+            </if>
+            <if test="audioUrl != null and audioUrl != ''">
+                and audio_url like concat("%",#{audio.audioUrl},"%")
+            </if>
+            <if test="audioSize != null and audioSize != ''">
+                and audio_size like concat("%",#{audio.audioSize},"%")
+            </if>
+            <if test="audioOrder != null">
+                and audio_order like concat("%",#{audio.audioOrder},"%")
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.CounterDao">
+
+    <resultMap type="com.baizhi.cmfz.entity.Counter" id="CounterMap">
+        <result property="counterId" column="counter_id" jdbcType="INTEGER"/>
+        <result property="counterName" column="counter_name" jdbcType="VARCHAR"/>
+        <result property="counterDate" column="counter_date" jdbcType="TIMESTAMP"/>
+        <result property="lessonId" column="lesson_id" jdbcType="VARCHAR"/>
+        <result property="user.userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="counterCount" column="counter_count" jdbcType="INTEGER"/>
+        <result property="counterStatus" column="counter_status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="getById" resultMap="CounterMap">
+        select
+          counter_id, counter_name, counter_date, lesson_id, user_id, counter_count, counter_status
+        from cmfzdemo.cmfz_counter
+        where counter_id = #{counterId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="getAllByLimit" resultMap="CounterMap">
+        select
+          counter_id, counter_name, counter_date, lesson_id, user_id, counter_count, counter_status
+        from cmfzdemo.cmfz_counter
+        <where>
+            <if test="counter.counterId != null">
+                and counter_id like concat("%",#{counter.counterId},"%")
+            </if>
+            <if test="counter.counterName != null and counter.counterName != ''">
+                and counter_name like concat("%",#{counter.counterName},"%")
+            </if>
+            <if test="counter.counterDate != null">
+                and counter_date like concat("%",#{counter.counterDate},"%")
+            </if>
+            <if test="counter.lessonId != null and counter.lessonId != ''">
+                and lesson_id like concat("%",#{counter.lessonId},"%")
+            </if>
+            <if test="counter.userId != null">
+                and user_id like concat("%",#{counter.userId},"%")
+            </if>
+            <if test="counter.counterCount != null">
+                and counter_count like concat("%",#{counter.counterCount},"%")
+            </if>
+            <if test="counter.counterStatus != null">
+                and counter_status like concat("%",#{counter.counterStatus},"%")
+            </if>
+        </where>
+        limit #{start}, #{rows}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="counterId" useGeneratedKeys="true">
+        insert into cmfzdemo.cmfz_counter(counter_name, counter_date, lesson_id, user_id, counter_count, counter_status)
+        values (#{counterName}, #{counterDate}, #{lessonId}, #{userId}, #{counterCount}, #{counterStatus})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cmfzdemo.cmfz_counter
+        <set>
+            <if test="counterName != null and counterName != ''">
+                counter_name = #{counterName},
+            </if>
+            <if test="counterDate != null">
+                counter_date = #{counterDate},
+            </if>
+            <if test="lessonId != null and lessonId != ''">
+                lesson_id = #{lessonId},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="counterCount != null">
+                counter_count = #{counterCount},
+            </if>
+            <if test="counterStatus != null">
+                counter_status = #{counterStatus},
+            </if>
+        </set>
+        where counter_id = #{counterId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cmfzdemo.cmfz_counter where counter_id = #{counterId}
+    </delete>
+
+    <!--通过主键批量删除-->
+    <delete id="deleteByIds">
+        delete from cmfzdemo.cmfz_counter where counter_id in #{counterId}
+        <foreach collection="array" item="id" separator="," open="(" close=")">#{id}</foreach>
+    </delete>
+    <!--查询数量-->
+    <select id="getCount" resultType="int">
+        select count(*)
+        from cmfzdemo.cmfz_counter
+        <where>
+            <if test="counterId != null">
+                and counter_id like concat("%",#{counter.counterId},"%")
+            </if>
+            <if test="counterName != null and counterName != ''">
+                and counter_name like concat("%",#{counter.counterName},"%")
+            </if>
+            <if test="counterDate != null">
+                and counter_date like concat("%",#{counter.counterDate},"%")
+            </if>
+            <if test="lessonId != null and lessonId != ''">
+                and lesson_id like concat("%",#{counter.lessonId},"%")
+            </if>
+            <if test="userId != null">
+                and user_id like concat("%",#{counter.userId},"%")
+            </if>
+            <if test="counterCount != null">
+                and counter_count like concat("%",#{counter.counterCount},"%")
+            </if>
+            <if test="counterStatus != null">
+                and counter_status like concat("%",#{counter.counterStatus},"%")
+            </if>
+        </where>
+    </select>
+</mapper>

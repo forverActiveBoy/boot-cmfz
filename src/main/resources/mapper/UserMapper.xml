@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.UserDao">
+	<!--查询近n天的新注册人数-->
+	<select id="getNewCreate" resultType="com.baizhi.cmfz.entity.User">
+		SELECT * FROM cmfz_user where create_date >= DATE_SUB(CURDATE(), INTERVAL #{day} DAY) ;
+	</select>
+
+	<select id="getCountBySex" resultType="com.baizhi.cmfz.entity.Sex">
+		select count(sex) count, sex from cmfz_user group by sex;
+	</select>
+
+	<!--查询省份信息-->
+	<select id="getProvince" resultType="com.baizhi.cmfz.entity.Province">
+		select distinct(user_province) from cmfz_user;
+	</select>
+</mapper>

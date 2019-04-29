@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.GuruDao">
+
+    <resultMap type="com.baizhi.cmfz.entity.Guru" id="GuruMap">
+        <result property="guruId" column="guru_id" jdbcType="INTEGER"/>
+        <result property="guruName" column="guru_name" jdbcType="VARCHAR"/>
+        <result property="guruImage" column="guru_image" jdbcType="VARCHAR"/>
+        <result property="guruNickname" column="guru_nickname" jdbcType="VARCHAR"/>
+        <result property="guruStatus" column="guru_status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="getById" resultMap="GuruMap">
+        select
+          guru_id, guru_name, guru_image, guru_nickname, guru_status
+        from cmfzdemo.cmfz_guru
+        where guru_id = #{guruId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="getAllByLimit" resultMap="GuruMap">
+        select
+          guru_id, guru_name, guru_image, guru_nickname, guru_status
+        from cmfzdemo.cmfz_guru
+        <where>
+            <if test="guru.guruId != null">
+                and guru_id like concat("%",#{guru.guruId},"%")
+            </if>
+            <if test="guru.guruName != null and guru.guruName != ''">
+                and guru_name like concat("%",#{guru.guruName},"%")
+            </if>
+            <if test="guru.guruImage != null and guru.guruImage != ''">
+                and guru_image like concat("%",#{guru.guruImage},"%")
+            </if>
+            <if test="guru.guruNickname != null and guru.guruNickname != ''">
+                and guru_nickname like concat("%",#{guru.guruNickname},"%")
+            </if>
+            <if test="guru.guruStatus != null">
+                and guru_status like concat("%",#{guru.guruStatus},"%")
+            </if>
+        </where>
+        limit #{start}, #{rows}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="guruId" useGeneratedKeys="true">
+        insert into cmfzdemo.cmfz_guru(guru_name, guru_image, guru_nickname, guru_status)
+        values (#{guruName}, #{guruImage}, #{guruNickname}, #{guruStatus})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cmfzdemo.cmfz_guru
+        <set>
+            <if test="guruName != null and guruName != ''">
+                guru_name = #{guruName},
+            </if>
+            <if test="guruImage != null and guruImage != ''">
+                guru_image = #{guruImage},
+            </if>
+            <if test="guruNickname != null and guruNickname != ''">
+                guru_nickname = #{guruNickname},
+            </if>
+            <if test="guruStatus != null">
+                guru_status = #{guruStatus},
+            </if>
+        </set>
+        where guru_id = #{guruId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cmfzdemo.cmfz_guru where guru_id = #{guruId}
+    </delete>
+    
+    <!--通过主键批量删除-->
+    <delete id="deleteByIds">
+        delete from cmfzdemo.cmfz_guru where guru_id in #{guruId}
+        <foreach collection="array" item="id" separator="," open="(" close=")">#{id}</foreach>
+    </delete>
+    <!--查询数量-->
+    <select id="getCount" resultType="int">
+        select count(*)
+        from cmfzdemo.cmfz_guru
+        <where>
+            <if test="guruId != null">
+                and guru_id like concat("%",#{guruId},"%")
+            </if>
+            <if test="guruName != null and guruName != ''">
+                and guru_name like concat("%",#{guruName},"%")
+            </if>
+            <if test="guruImage != null and guruImage != ''">
+                and guru_image like concat("%",#{guruImage},"%")
+            </if>
+            <if test="guruNickname != null and guruNickname != ''">
+                and guru_nickname like concat("%",#{guruNickname},"%")
+            </if>
+            <if test="guruStatus != null">
+                and guru_status like concat("%",#{guruStatus},"%")
+            </if>
+        </where>
+    </select>
+
+	<!--批量假删除-->
+	<update id="multiDelete">
+		update cmfz_guru set guru_status = 0
+		where guru_id in
+		<foreach collection="array" item="id" separator="," open="(" close=")">#{id}</foreach>
+	</update>
+
+	<!--批量假删除(恢复)-->
+	<update id="multiDelete2">
+		update cmfz_guru set guru_status = 1
+		where guru_id in
+		<foreach collection="array" item="id" separator="," open="(" close=")">#{id}</foreach>
+	</update>
+</mapper>

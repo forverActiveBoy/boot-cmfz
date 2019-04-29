@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.LessonDao">
+
+
+	<resultMap id="lessonList" type="com.baizhi.cmfz.entity.Lesson">
+		<result property="lessonId" column="lesson_id" jdbcType="INTEGER"/>
+		<result property="lessonName" column="lesson_name" jdbcType="VARCHAR"/>
+		<result property="lessonStatus" column="lesson_status" jdbcType="INTEGER"/>
+
+		<association property="user" javaType="com.baizhi.cmfz.entity.User">
+			<result column="name" property="name"/>
+			<result column="userId" property="userId"/>
+		</association>
+
+		<collection property="children" ofType="com.baizhi.cmfz.entity.Counter">
+			<result property="counterId" column="count_id" jdbcType="INTEGER"/>
+			<result property="lessonName" column="count_name" jdbcType="VARCHAR"/>
+			<result property="counterDate" column="count_date" jdbcType="TIMESTAMP"/>
+			<result property="counterCount" column="counter_count" jdbcType="INTEGER"/>
+			<result property="counterStatus" column="counter_status" jdbcType="INTEGER"/>
+			<result property="userId" column="userIId"/>
+
+		</collection>
+	</resultMap>
+
+	<select id="getAllLesson" resultMap="lessonList">
+		select t3.*,
+			   t4.counter_id     count_id,
+			   t4.counter_name   count_name,
+			   t4.counter_date   count_date,
+			   t4.user_id        userIId,
+			   t4.counter_count  counter_count,
+			   t4.counter_status counter_status
+		from (select t1.*, t2.user_id userId, t2.name, t2.nickname
+			  from cmfz_lesson t1
+					   left join cmfz_user t2 on t1.user_id = t2.user_id)t3
+				 left join cmfz_counter t4 on t3.lesson_id = t4.lesson_id
+		<where>
+			<if test="lessonName != null and lessonName != ''">
+				and lesson_Name like concat("%",#{lessonName},"%")
+			</if>
+			<if test="counterName != null and counterName != ''">
+				and counter_name like concat("%",#{counterName},"%")
+			</if>
+		</where>
+	</select>
+
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.ArticleDao">
+
+    <resultMap type="com.baizhi.cmfz.entity.Article" id="ArticleMap">
+        <result property="articleId" column="article_id" jdbcType="INTEGER"/>
+        <result property="articleName" column="article_name" jdbcType="VARCHAR"/>
+        <result property="articleImage" column="article_image" jdbcType="VARCHAR"/>
+        <result property="articleContent" column="article_content" jdbcType="VARCHAR"/>
+        <result property="guruId" column="guru_id" jdbcType="INTEGER"/>
+        <result property="articleDate" column="article_date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="getById" resultMap="ArticleMap">
+        select
+          article_id, article_name, article_image, article_content, guru_id, article_date
+        from cmfzdemo.cmfz_article
+        where article_id = #{articleId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="getAllByLimit" resultMap="ArticleMap">
+        select
+          article_id, article_name, article_image, article_content, t1.guru_id, article_date
+        from cmfzdemo.cmfz_article t1 left join  cmfz_guru t2 on t1.guru_id = t2.guru_id
+        <where>
+			and t2.guru_status = 1
+            <if test="article.articleId != null">
+                and article_id like concat("%",#{article.articleId},"%")
+            </if>
+            <if test="article.articleName != null and article.articleName != ''">
+                and article_name like concat("%",#{article.articleName},"%")
+            </if>
+            <if test="article.articleImage != null and article.articleImage != ''">
+                and article_image like concat("%",#{article.articleImage},"%")
+            </if>
+            <if test="article.articleContent != null and article.articleContent != ''">
+                and article_content like concat("%",#{article.articleContent},"%")
+            </if>
+            <if test="article.guruId != null">
+                and guru_id like concat("%",#{article.guruId},"%")
+            </if>
+            <if test="article.articleDate != null">
+                and article_date like concat("%",#{article.articleDate},"%")
+            </if>
+        </where>
+        limit #{start}, #{rows}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="articleId" useGeneratedKeys="true">
+        insert into cmfzdemo.cmfz_article(article_name, article_image, article_content, guru_id, article_date)
+        values (#{articleName}, #{articleImage}, #{articleContent}, #{guruId}, #{articleDate})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cmfzdemo.cmfz_article
+        <set>
+            <if test="articleName != null and articleName != ''">
+                article_name = #{articleName},
+            </if>
+            <if test="articleImage != null and articleImage != ''">
+                article_image = #{articleImage},
+            </if>
+            <if test="articleContent != null and articleContent != ''">
+                article_content = #{articleContent},
+            </if>
+            <if test="guruId != null">
+                guru_id = #{guruId},
+            </if>
+            <if test="articleDate != null">
+                article_date = #{articleDate},
+            </if>
+        </set>
+        where article_id = #{articleId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cmfzdemo.cmfz_article where article_id = #{articleId}
+    </delete>
+    
+    <!--通过主键批量删除-->
+    <delete id="deleteByIds">
+        delete from cmfzdemo.cmfz_article where article_id in #{articleId}
+        <foreach collection="array" item="id" separator="," open="(" close=")">#{id}</foreach>
+    </delete>
+    <!--查询数量-->
+    <select id="getCount" resultType="int">
+        select count(*)
+        from cmfzdemo.cmfz_article t1 left join  cmfz_guru t2 on t1.guru_id = t2.guru_id
+        <where>
+			and t2.guru_status = 1
+            <if test="articleId != null">
+                and article_id like concat("%",#{article.articleId},"%")
+            </if>
+            <if test="articleName != null and articleName != ''">
+                and article_name like concat("%",#{article.articleName},"%")
+            </if>
+            <if test="articleImage != null and articleImage != ''">
+                and article_image like concat("%",#{article.articleImage},"%")
+            </if>
+            <if test="articleContent != null and articleContent != ''">
+                and article_content like concat("%",#{article.articleContent},"%")
+            </if>
+            <if test="guruId != null">
+                and guru_id like concat("%",#{article.guruId},"%")
+            </if>
+            <if test="articleDate != null">
+                and article_date like concat("%",#{article.articleDate},"%")
+            </if>
+        </where>
+    </select>
+</mapper>

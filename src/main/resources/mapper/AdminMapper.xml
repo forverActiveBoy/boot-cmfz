@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.AdminDao">
+
+    <resultMap type="com.baizhi.cmfz.entity.Admin" id="AdminMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+    </resultMap>
+
+	<select id="getOne" resultMap="AdminMap">
+		select *
+		from cmfz_admin
+		where username = #{username}
+		  and password = #{password};
+	</select>
+
+    <!--查询单个-->
+    <select id="getById" resultMap="AdminMap">
+        select
+          id, username, password
+        from cmfzdemo.cmfz_admin
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="getAllByLimit" resultMap="AdminMap">
+        select
+          id, username, password
+        from cmfzdemo.cmfz_admin
+        <where>
+            <if test="admin != null and admin.id &lt;= 0 and admin.id != null">
+                and id like concat("%",#{admin.id},"%")
+            </if>
+            <if test="admin != null and admin.username != null and admin.username != ''">
+                and username like concat("%",#{admin.username},"%")
+            </if>
+            <if test="admin != null and admin.password != null and admin.password != ''">
+                and password like concat("%",#{admin.password},"%")
+            </if>
+        </where>
+        limit #{start}, #{rows}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into cmfzdemo.cmfz_admin(username, password)
+        values (#{username}, #{password})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cmfzdemo.cmfz_admin
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cmfzdemo.cmfz_admin where id = #{id}
+    </delete>
+    
+    <!--通过主键批量删除-->
+    <delete id="deleteByIds">
+        delete from cmfzdemo.cmfz_admin where id in
+        <foreach collection="array" item="id" separator="," open="(" close=")">#{id}</foreach>
+    </delete>
+    <!--查询数量-->
+    <select id="getCount" resultType="int">
+        select count(*)
+        from cmfzdemo.cmfz_admin
+        <where>
+            <if test="id != null">
+                and id like concat("%",#{id},"%")
+            </if>
+            <if test="username != null and username != ''">
+                and username like concat("%",#{username},"%")
+            </if>
+            <if test="password != null and password != ''">
+                and password like concat("%",#{password},"%")
+            </if>
+        </where>
+    </select>
+</mapper>

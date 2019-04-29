@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.cmfz.dao.AlbumDao">
+
+    <resultMap type="com.baizhi.cmfz.entity.Album" id="AlbumMap">
+        <result property="albumId" column="album_id" jdbcType="INTEGER"/>
+        <result property="albumName" column="album_name" jdbcType="VARCHAR"/>
+        <result property="albumAuthor" column="album_author" jdbcType="VARCHAR"/>
+        <result property="albumTeller" column="album_teller" jdbcType="VARCHAR"/>
+        <result property="albumEpisodes" column="album_Episodes" jdbcType="INTEGER"/>
+        <result property="albumDate" column="album_date" jdbcType="TIMESTAMP"/>
+        <result property="albumContent" column="album_content" jdbcType="VARCHAR"/>
+        <result property="albumImage" column="album_image" jdbcType="VARCHAR"/>
+        <result property="albumStar" column="album_star" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="getById" resultMap="AlbumMap">
+        select
+          album_id, album_name, album_author, album_teller, album_Episodes, album_date, album_content, album_image, album_star
+        from cmfzdemo.cmfz_album
+        where album_id = #{albumId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="getAllByLimit" resultMap="AlbumMap">
+        select
+          album_id, album_name, album_author, album_teller, album_Episodes, album_date, album_content, album_image, album_star
+        from cmfzdemo.cmfz_album
+        <where>
+            <if test="album.albumId != null">
+                and album_id = #{album.albumId}
+            </if>
+            <if test="album.albumName != null and album.albumName != ''">
+                and album_name like concat("%",#{album.albumName},"%")
+            </if>
+            <if test="album.albumAuthor != null and album.albumAuthor != ''">
+                and album_author like concat("%",#{album.albumAuthor},"%")
+            </if>
+            <if test="album.albumTeller != null and album.albumTeller != ''">
+                and album_teller like concat("%",#{album.albumTeller},"%")
+            </if>
+            <if test="album.albumEpisodes != null">
+                and album_Episodes like concat("%",#{album.albumEpisodes},"%")
+            </if>
+            <if test="album.albumDate != null">
+                and album_date &gt; #{album.albumDate}
+            </if>
+            <if test="album.albumContent != null and album.albumContent != ''">
+                and album_content like concat("%",#{album.albumContent},"%")
+            </if>
+            <if test="album.albumImage != null and album.albumImage != ''">
+                and album_image = #{album.albumImage}
+            </if>
+            <if test="album.albumStar != null">
+                and album_star = #{album.albumStar}
+            </if>
+        </where>
+        limit #{start}, #{rows}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insertNew" keyProperty="albumId" useGeneratedKeys="true">
+        insert into cmfzdemo.cmfz_album(album_name, album_author, album_teller, album_Episodes, album_date, album_content, album_image, album_star)
+        values (#{albumName}, #{albumAuthor}, #{albumTeller}, #{albumEpisodes}, #{albumDate}, #{albumContent}, #{albumImage}, #{albumStar})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cmfzdemo.cmfz_album
+        <set>
+            <if test="albumName != null and albumName != ''">
+                album_name = #{albumName},
+            </if>
+            <if test="albumAuthor != null and albumAuthor != ''">
+                album_author = #{albumAuthor},
+            </if>
+            <if test="albumTeller != null and albumTeller != ''">
+                album_teller = #{albumTeller},
+            </if>
+            <if test="albumEpisodes != null">
+                album_Episodes = #{albumEpisodes},
+            </if>
+            <if test="albumDate != null">
+                album_date = #{albumDate},
+            </if>
+            <if test="albumContent != null and albumContent != ''">
+                album_content = #{albumContent},
+            </if>
+            <if test="albumImage != null and albumImage != ''">
+                album_image = #{albumImage},
+            </if>
+            <if test="albumStar != null">
+                album_star = #{albumStar},
+            </if>
+        </set>
+        where album_id = #{albumId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cmfzdemo.cmfz_album where album_id = #{albumId}
+    </delete>
+    
+    <!--通过主键批量删除-->
+    <delete id="deleteByIds">
+        delete from cmfzdemo.cmfz_album where album_id in #{albumId}
+        <foreach collection="array" item="id" separator="," open="(" close=")">#{id}</foreach>
+    </delete>
+    <!--查询数量-->
+    <select id="getCount" resultType="int">
+        select count(*)
+        from cmfzdemo.cmfz_album
+        <where>
+            <if test="albumId != null">
+                and album_id like concat("%",#{album.albumId},"%")
+            </if>
+            <if test="albumName != null and albumName != ''">
+                and album_name like concat("%",#{album.albumName},"%")
+            </if>
+            <if test="albumAuthor != null and albumAuthor != ''">
+                and album_author like concat("%",#{album.albumAuthor},"%")
+            </if>
+            <if test="albumTeller != null and albumTeller != ''">
+                and album_teller like concat("%",#{album.albumTeller},"%")
+            </if>
+            <if test="albumEpisodes != null">
+                and album_Episodes like concat("%",#{album.albumEpisodes},"%")
+            </if>
+            <if test="albumDate != null">
+                and album_date like concat("%",#{album.albumDate},"%")
+            </if>
+            <if test="albumContent != null and albumContent != ''">
+                and album_content like concat("%",#{album.albumContent},"%")
+            </if>
+            <if test="albumImage != null and albumImage != ''">
+                and album_image like concat("%",#{album.albumImage},"%")
+            </if>
+            <if test="albumStar != null">
+                and album_star like concat("%",#{album.albumStar},"%")
+            </if>
+        </where>
+    </select>
+</mapper>
